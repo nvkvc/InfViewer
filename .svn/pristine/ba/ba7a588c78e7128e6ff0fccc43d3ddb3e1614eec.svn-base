@@ -1,0 +1,46 @@
+package model;
+
+import java.io.File;
+
+import javax.swing.DefaultListModel;
+
+import model.file.UIINDFile;
+import model.file.UISEKFile;
+import model.file.UISERFile;
+
+@SuppressWarnings("serial")
+public class ListaModel extends DefaultListModel{
+
+	public ListaModel() {
+		super();
+		
+	}
+
+   public ListaModel(String path){
+	   File folder = new File(path);
+	   File[] listOfFiles = folder.listFiles();
+	   
+	   UISERFile back=new UISERFile(folder.getParent(),"...",true);
+	   addElement(back);
+	    for (int i = 0; i < listOfFiles.length; i++) {
+  
+	    	  
+            if (listOfFiles[i].isDirectory()){
+	    	       UISERFile uifile=new UISERFile(listOfFiles[i].getAbsolutePath(),listOfFiles[i].getName(),true);
+  	               addElement(uifile);
+            }else if (listOfFiles[i].getName().contains(".ser")){ 	 
+                   UISERFile uifile=new UISERFile(listOfFiles[i].getParentFile().getAbsolutePath(),listOfFiles[i].getName(),false);
+      	           addElement(uifile);
+            }else if (listOfFiles[i].getName().contains(".sek")){ 	 
+            	   UISEKFile uifile=new UISEKFile(listOfFiles[i].getParentFile().getAbsolutePath(),listOfFiles[i].getName(),false);
+  	               addElement(uifile);
+             }else if (listOfFiles[i].getName().contains(".ind")){ 	 
+          	   UIINDFile uifile=new UIINDFile(listOfFiles[i].getParentFile().getAbsolutePath(),listOfFiles[i].getName(),false);
+	               addElement(uifile);
+         }
+	      
+	      
+	    }
+   }
+
+}

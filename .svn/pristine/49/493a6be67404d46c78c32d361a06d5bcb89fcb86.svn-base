@@ -1,0 +1,25 @@
+package model;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+
+public class Skladiste extends InformacioniResurs{
+
+	private ArrayList<AbstractSChild> deca;
+	
+	public Skladiste(){
+		deca = new ArrayList();
+	}
+	
+	public ArrayList<AbstractSChild> getDeca() {
+		return deca;
+	}
+	
+	public void setCDeca(ArrayList<AbstractSChild> children) {
+		this.deca = children;
+	}
+
+}

@@ -1,0 +1,196 @@
+package ui.app;
+import gui.Menu;
+import gui.Toolbar;
+import gui.ToolbarDrives;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
+import view.FileView;
+import view.ListaView;
+
+@SuppressWarnings("serial")
+public class AppCore extends JFrame{
+	
+	private static AppCore instance=null;
+    private ListaView lista;
+    private Menu menu;
+    private Toolbar toolbar;
+    private ToolbarDrives toolbarDrives;
+    private FileView fileView;
+    private JTabbedPane framework;
+    
+	private AppCore() {
+		
+	}
+	
+    
+    
+	private void initialise(){
+		
+
+		initialiseList();
+    	initialiseGUI();
+    }
+    
+	private void initialiseGUI(){
+    	
+		setSize(900,700);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setTitle("UI Project");
+		
+		JPanel panTop=new JPanel();
+		panTop.setPreferredSize(new Dimension(50,60));
+		
+		JPanel panLeft=new JPanel();
+   	    panLeft.setPreferredSize(new Dimension(100,100));
+		
+		
+		framework=new JTabbedPane();
+		framework.setBackground(Color.GRAY);
+		
+		
+		JPanel panBottom=new JPanel();
+		panBottom.setPreferredSize(new Dimension(100,50));
+		
+		
+		getContentPane().setLayout(new BorderLayout());
+		
+		
+		JSplitPane split=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,panLeft,framework);
+		split.setDividerLocation(300);
+		split.setOneTouchExpandable(true);
+		getContentPane().add(panTop,BorderLayout.NORTH);
+		getContentPane().add(split,BorderLayout.CENTER);
+		getContentPane().add(panBottom,BorderLayout.SOUTH);
+		
+		
+		menu=new Menu();
+		setJMenuBar(menu);
+		toolbar=new Toolbar();
+		panTop.setLayout(new BorderLayout());
+		panTop.add(toolbar,BorderLayout.NORTH);
+		
+		toolbarDrives=new ToolbarDrives();
+		panTop.add(toolbarDrives,BorderLayout.CENTER);
+
+		
+		
+
+
+	   
+	    JScrollPane navigator=new JScrollPane(lista);
+	    
+		navigator.setPreferredSize(new Dimension(100,100));
+		panLeft.setLayout(new BorderLayout());
+		panLeft.add(navigator,BorderLayout.CENTER);
+		
+		
+		
+
+    }
+
+	
+	private void initialiseList(){
+		 lista = new ListaView();
+    }
+	
+	
+	public static AppCore getInstance(){
+		if (instance==null){
+			instance=new AppCore();
+			instance.initialise();
+		}
+		return instance;
+	}
+
+
+
+	public ListaView getLista() {
+		return lista;
+	}
+
+
+
+	public void setLista(ListaView lista) {
+		this.lista = lista;
+	}
+
+
+
+	public Menu getMenu() {
+		return menu;
+	}
+
+
+
+	public void setMenu(Menu menu) {
+		this.menu = menu;
+	}
+
+
+
+	public Toolbar getToolbar() {
+		return toolbar;
+	}
+
+
+
+	public void setToolbar(Toolbar toolbar) {
+		this.toolbar = toolbar;
+	}
+
+
+
+	public ToolbarDrives getToolbarDrives() {
+		return toolbarDrives;
+	}
+
+
+
+	public void setToolbarDrives(ToolbarDrives toolbarDrives) {
+		this.toolbarDrives = toolbarDrives;
+	}
+
+
+
+	public FileView getFileView() {
+		return fileView;
+	}
+
+
+
+	public void setFileView(FileView fileView) {
+		this.fileView = fileView;
+		
+		framework.add(fileView,fileView.getUiFile().getFileName());
+		SwingUtilities.updateComponentTreeUI(this);
+		
+	}
+
+
+
+	public JTabbedPane getFramework() {
+		return framework;
+	}
+
+
+
+	public void setFramework(JTabbedPane framework) {
+		this.framework = framework;
+	}
+
+
+
+	
+}

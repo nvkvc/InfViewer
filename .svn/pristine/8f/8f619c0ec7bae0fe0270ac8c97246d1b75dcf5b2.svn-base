@@ -1,0 +1,29 @@
+package actions;
+
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+public class CloseAllFileAction extends AbstractUIAction {
+
+
+	
+	public CloseAllFileAction() {
+		
+		
+		
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+		        KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/?.png"));
+		putValue(NAME, "Close all");
+		putValue(SHORT_DESCRIPTION, "Close all");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		//zatvaranje svih panela sa sadržinom otvorenog fajla
+	}
+
+}

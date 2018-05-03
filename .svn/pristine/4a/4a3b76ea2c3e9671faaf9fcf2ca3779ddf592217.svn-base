@@ -1,0 +1,36 @@
+package gui;
+
+
+import javax.swing.JToolBar;
+
+import actions.CloseAllFileAction;
+import actions.CloseFileAction;
+import actions.HelpAboutAction;
+import actions.NewFileAction;
+import actions.SaveFileAction;
+
+public class Toolbar extends JToolBar{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Toolbar(){
+		
+		add(new NewFileAction());
+		addSeparator();
+		add(new SaveFileAction());
+		addSeparator();
+		add(new CloseFileAction());
+		addSeparator();
+		add(new CloseAllFileAction());
+		addSeparator();
+		add(new HelpAboutAction());
+		
+		
+		setFloatable(false);
+		
+		
+	}
+
+}

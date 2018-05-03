@@ -1,0 +1,73 @@
+package view;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import model.ListaModel;
+import model.file.UIAbstractFile;
+import ui.app.AppCore;
+
+
+@SuppressWarnings("serial")
+public class ListaView extends JList implements ListSelectionListener,MouseListener{
+
+	public ListaView() {
+		super();
+		addListSelectionListener(this);
+		addMouseListener(this);
+		setCellRenderer(new ListaCellRenderer());
+		
+		
+	}
+
+	public void valueChanged(ListSelectionEvent arg0) {
+
+
+	}
+
+	public void mouseClicked(MouseEvent arg0) {
+		
+		if (arg0.getClickCount()==2){
+		Object o=getModel().getElementAt(getSelectedIndex());
+		UIAbstractFile uifile=(UIAbstractFile)o;
+		    if (uifile.isDirectory()){
+		    	
+			    setModel(new ListaModel(uifile.getPath()));
+		    }else{
+		    	
+		    	FileView fileView=new FileView(uifile);
+		    	AppCore.getInstance().setFileView(fileView);
+		    }
+
+		}
+		
+	}
+
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+}

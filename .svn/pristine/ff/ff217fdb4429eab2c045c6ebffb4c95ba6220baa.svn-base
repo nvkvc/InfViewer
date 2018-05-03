@@ -1,0 +1,35 @@
+package actions;
+
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+import ui.app.AppCore;
+
+public class CloseFileAction extends AbstractUIAction {
+
+
+	
+	public CloseFileAction() {
+		
+		
+		
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+		        KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/?.png"));
+		putValue(NAME, "Close file");
+		putValue(SHORT_DESCRIPTION, "Close file");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		//zatvara trenutno aktivni file
+
+		//for (int i=AppCore.getInstance().getFramework().getComponentCount()-1;i>=0;i--){
+		   AppCore.getInstance().getFramework().removeTabAt(AppCore.getInstance().getFramework().getSelectedIndex());
+		//}
+	}
+
+}

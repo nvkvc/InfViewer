@@ -1,0 +1,70 @@
+{  
+   "naziv":"ui-2016-tim203.4",
+   "key":null,
+   "deca":[  
+      {  
+         "type":"Paket",
+         "naziv":"ui-2016-tim203.4",
+         "key":null,
+         "deca":[  
+            {  
+               "type":"DBFile",
+               "changed":false,
+               "naziv":null,
+               "key":null,
+               "relacije":[  
+
+               ],
+               "atributi":[  
+
+               ],
+               "name":"STUDENTI",
+               "path":"",
+               "directory":false,
+               "data":null,
+               "countFetches":0,
+               "fields":[  
+
+               ],
+               "absolutePath":"/STUDENTI",
+               "file_SIZE":0,
+               "record_NUM":0,
+               "block_NUM":0,
+               "record_SIZE":0,
+               "block_FACTOR":20,
+               "file_POINTER":0
+            },
+            {  
+               "type":"DBFile",
+               "changed":false,
+               "naziv":null,
+               "key":null,
+               "relacije":[  
+
+               ],
+               "atributi":[  
+
+               ],
+               "name":"TOK_STUDIJA",
+               "path":"",
+               "directory":false,
+               "data":null,
+               "countFetches":0,
+               "fields":[  
+
+               ],
+               "absolutePath":"/TOK_STUDIJA",
+               "file_SIZE":0,
+               "record_NUM":0,
+               "block_NUM":0,
+               "record_SIZE":0,
+               "block_FACTOR":20,
+               "file_POINTER":0
+            }
+         ]
+      }
+   ],
+   "url":"147.91.175.155",
+   "username":"ui-2016-tim203.4",
+   "password":"ui-2016-tim203.4.SuK990"
+}

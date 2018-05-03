@@ -1,0 +1,37 @@
+package gui;
+
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+
+import actions.CloseAllFileAction;
+import actions.CloseFileAction;
+import actions.HelpAboutAction;
+import actions.NewFileAction;
+import actions.SaveFileAction;
+
+@SuppressWarnings("serial")
+public class Menu extends JMenuBar{
+	public Menu (){
+		JMenu file=new JMenu("File");
+
+		file.add(new NewFileAction());
+		file.addSeparator();
+		file.add(new SaveFileAction());
+		file.addSeparator();
+		file.add(new CloseFileAction());
+   	    file.add(new CloseAllFileAction());
+		
+		
+		
+
+		JMenu help=new JMenu("Help");
+		help.add(new HelpAboutAction());
+		
+		
+		add(file);
+		add(help);
+		
+	}
+
+}

@@ -1,0 +1,25 @@
+package gui;
+
+
+import java.io.File;
+
+import javax.swing.JToolBar;
+
+import actions.OpenDirAction;
+
+@SuppressWarnings("serial")
+public class ToolbarDrives extends JToolBar{
+
+	public ToolbarDrives(){
+		
+		setFloatable(false);
+	    File[] roots = File.listRoots();
+	        for (int index = 0; index < roots.length; index++)
+	        {
+	            add(new OpenDirAction(roots[index].toString()));
+	            addSeparator();
+	            
+	        }
+	}
+
+}

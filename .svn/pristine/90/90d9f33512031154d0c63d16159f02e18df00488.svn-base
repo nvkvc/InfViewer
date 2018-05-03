@@ -1,0 +1,50 @@
+package view;
+
+
+
+import java.awt.Component;
+import java.net.URL;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JList;
+
+import model.file.UIAbstractFile;
+
+
+
+@SuppressWarnings("serial")
+public class ListaCellRenderer extends DefaultListCellRenderer{
+
+	public ListaCellRenderer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	 public Component getListCellRendererComponent(
+             JList list,
+             Object value,
+             int index,
+             boolean isSelected,
+             boolean cellHasFocus) {
+
+		 super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
+		 if (value instanceof UIAbstractFile){
+			 if (((UIAbstractFile)value).isDirectory()){
+                 URL imageURL = getClass().getResource("images/tdir.gif");
+                 Icon icon = null;
+                 if (imageURL != null)                       
+                   icon = new ImageIcon(imageURL);
+                 setIcon(icon);
+			 }else{
+				 URL imageURL = getClass().getResource("images/tfile.gif");
+                 Icon icon = null;
+                 if (imageURL != null)                       
+                   icon = new ImageIcon(imageURL);
+                 setIcon(icon);				 
+			 }
+		 }
+		 return this;
+	 }
+
+}

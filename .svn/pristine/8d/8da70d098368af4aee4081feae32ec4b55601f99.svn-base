@@ -1,0 +1,29 @@
+package actions;
+
+
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.KeyStroke;
+
+public class HelpAboutAction extends AbstractUIAction {
+
+
+	
+	public HelpAboutAction() {
+		
+		
+		
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(
+		        KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		putValue(SMALL_ICON, loadIcon("images/?.png"));
+		putValue(NAME, "About UI project");
+		putValue(SHORT_DESCRIPTION, "About UI project");
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		//otvara mali dijalog sa vašom slikom, brojem indeksa i imenom i prezimenom, mailom i telefonom
+	}
+
+}

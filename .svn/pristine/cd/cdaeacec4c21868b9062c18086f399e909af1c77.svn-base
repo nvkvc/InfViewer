@@ -1,0 +1,107 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
+
+import org.json.JSONException;
+
+import model.AbstractFile;
+import model.Atribut;
+import model.Entitet;
+import model.MyTableModel;
+
+public class MyTabbedPane extends JTabbedPane{
+	
+	private int counter;
+	JToolBar tb;
+	
+	public MyTabbedPane(){
+		counter = 0;
+	}
+	
+	public void addPanel(){
+		counter++;
+		JPanel panel = new JPanel();
+		addTab("Tab "+counter, panel);
+		setSelectedComponent(panel);
+	}
+	
+	public void addPanel(String str){
+		JPanel panel = new JPanel();
+		addTab(str, panel);
+		setSelectedComponent(panel);
+	}
+	
+	/**
+	 * FileView paneli
+	 * @throws JSONException 
+	 */
+	public void addFileViewPanel(AbstractFile file) throws JSONException{
+		FileView panel = new FileView(file);
+		addTab(file.getName(), panel);
+		setSelectedComponent(panel);
+	}
+	public void addPanel(String str, ArrayList<Atribut> atributi){
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		
+		if(atributi.size()!=0){
+			MyTableModel model = new MyTableModel(atributi);
+			
+			JTable table = new JTable(model);
+			
+			panel.add(table.getTableHeader(), BorderLayout.NORTH);
+		}
+		
+		addTab(str, panel);
+		setSelectedComponent(panel);
+	}
+	
+	public void addTablePanel(Entitet entitet){
+		addTab(entitet.getNaziv(), new MyTablePanel(entitet));
+	}
+	
+	/**
+	 * Dodavanje tab-a u editor meta seme i postavljanje teksta iz otvorenog fajla
+	 * @param fileName
+	 * @param text
+	 * @param ta
+	 */
+	public void addPanel(String fileName, String text, JTextArea ta){
+		JPanel panel = new JPanel();
+		JScrollPane scrollPane = new JScrollPane(ta);
+		ta.setText(text);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		panel.setLayout(new BorderLayout());
+		panel.add(scrollPane, BorderLayout.CENTER);
+		addTab(fileName, panel);
+		setSelectedComponent(panel);
+	}
+	
+	/**
+	 * Dodavanje tabova u Editor meta seme
+	 * @param ta
+	 */
+	public void addPanel(JTextArea ta){
+		counter++;
+		JPanel panel = new JPanel();
+		JScrollPane scrollPane = new JScrollPane(ta);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		panel.setLayout(new BorderLayout());
+		panel.add(scrollPane, BorderLayout.CENTER);
+		addTab("Tab "+counter, panel);
+		setSelectedComponent(panel); 
+	}
+	
+
+}

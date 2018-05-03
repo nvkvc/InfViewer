@@ -1,0 +1,210 @@
+package model;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.jar.Attributes.Name;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import view.MainFrame;
+
+public class DBFile extends AbstractFile{
+	
+	
+	public DBFile(String name)
+	{
+		super("", name, false);
+	} 
+	
+	public void findFilterRecord(ArrayList<String> record) throws SQLException
+	{
+		String s = "SELECT * FROM " + getName() + " WHERE ";
+		for (int i = 0; i < record.size(); i++)
+		{
+			String rec = record.get(i);
+			if (rec.trim().equals("")) continue;
+			
+			s += "LTRIM(RTRIM(" + getFields().get(i).getName() + "))";
+			
+			String type = getFields().get(i).getType();
+			if (type.equals("numeric") || type.equals("int") || type.equals("smallint"))
+			{
+				char c = rec.charAt(0);
+				if (c != '=' && c != '>' && c != '<') s += "=?";
+				else s += String.valueOf(c) + "?";
+			}
+			else s += " like ?";
+			s +=  " AND ";
+		}
+		s = s.substring(0, s.length() - 4);
+		
+		PreparedStatement pStatement = MainFrame.getMainFrame().getConnection().prepareStatement(s);
+		int k = 1;
+		for (int i = 0; i < record.size(); i++)
+		{
+			String rec = record.get(i);
+			if (rec.trim().equals("")) continue;
+			char c = rec.charAt(0);
+			if (c == '=' || c =='>' || c == '<') rec = rec.substring(1, rec.length());
+			String type = getFields().get(i).getType();
+			
+			if (type.equals("numeric")) pStatement.setObject(k++,rec.trim() , java.sql.Types.NUMERIC);
+			else if (type.equals("smallint")) pStatement.setInt(k++, Integer.parseInt(rec));
+			else pStatement.setString(k++, rec.trim());
+		}
+		
+		ResultSet rs = pStatement.executeQuery();
+		int i = 0;
+		
+		data = new String[(int)RECORD_NUM][fields.size()];
+		while(rs.next())
+		{
+			data[i++] = new String[fields.size()];
+			for (int j = 0; j < fields.size(); j++)
+				data[i - 1][j] = rs.getString(j + 1);
+		}
+		
+		setChanged();
+		notifyObservers(false);
+		
+		setChanged();
+		notifyObservers(0);
+	}
+	
+	/**
+	 * author Petar Eric
+	 * @param groups
+	 * @param boxes
+	 * @throws SQLException
+	 */
+	
+	public void sortMDI(ArrayList<ButtonGroup> groups, ArrayList<JCheckBox> boxes) throws SQLException
+    {
+        String s = "SELECT * FROM " + getName() + " ORDER BY ";
+       
+        for (int i = 0; i < getFields().size(); i++)
+        {
+            if (!boxes.get(i).isSelected()) continue;
+           
+            s += getFields().get(i).getName() + " ";
+           
+            ButtonGroup group = groups.get(i);
+            Enumeration<AbstractButton> e = group.getElements();
+            while (e.hasMoreElements())
+            {
+                JRadioButton o = (JRadioButton) e.nextElement();
+                if (o.isSelected())
+                {
+                    if (o.getText().equals("ascending")) s += "ASC, ";
+                    else if (o.getText().equals("descending")) s += "DESC, ";
+                }
+            }
+        }
+        if (s.endsWith("ORDER BY "))
+        {
+            JOptionPane.showMessageDialog(MainFrame.getMainFrame(), "No selection");
+            return;
+        }
+                s = s.substring(0, s.length() - 2);
+        Statement statement = MainFrame.getMainFrame().getConnection().createStatement();
+        ResultSet rs = statement.executeQuery(s);
+        int i = 0;
+        while(rs.next())
+        {
+            data[i++] = new String[fields.size()];
+            for (int j = 0; j < fields.size(); j++)
+                data[i - 1][j] = rs.getString(j + 1);
+           
+        }
+        setChanged();
+        notifyObservers(false);
+       
+    }
+	
+	public void readHeader()
+	{
+		try {
+			DatabaseMetaData metaData = MainFrame.getMainFrame().getConnection().getMetaData();
+			ResultSet columns = metaData.getColumns(null, null, getName(), null);
+			
+			JSONObject o = null;
+			try {
+				BufferedReader br = new BufferedReader((new FileReader(new File("json" + File.separator + "tabele.json"))));
+				o = new JSONObject(new JSONTokener(br));
+				if (o.has(getName() + "_KOLONE")) o = o.getJSONObject(getName() + "_KOLONE");
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			
+			
+			while(columns.next())
+			{
+				ResultSet keys = metaData.getPrimaryKeys(null, null, getName());
+				String name = columns.getString("COLUMN_NAME");
+				boolean pk = false;
+				while(keys.next())
+					if (name.equals(keys.getString("COLUMN_NAME"))) pk = true;
+				
+				FileField field = new FileField(name, columns.getString("TYPE_NAME"), columns.getInt("COLUMN_SIZE"), pk);
+				if (o != null && o.has(name)) field.setDisplayName(o.getString(name));
+				getFields().add(field);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void fetchBlock()
+	{
+		try {
+			Statement statement = MainFrame.getMainFrame().getConnection().createStatement();
+			ResultSet count = statement.executeQuery("SELECT COUNT(*) FROM " + getName());
+			
+			if (count.next()) RECORD_NUM = count.getInt(1);
+			statement.close();
+			count.close();
+			
+			String s = "";
+			if (fields.size() > 0) s = fields.get(0).getName();
+			for (int i = 1; i < fields.size(); i++) s += "," + fields.get(i).getName();
+				
+			statement = MainFrame.getMainFrame().getConnection().createStatement();
+			count = statement.executeQuery("SELECT " + s + " FROM " + getName());
+			
+			data = new String[(int)RECORD_NUM][];
+			int i = 0;
+			while(count.next())
+			{
+				data[i++] = new String[fields.size()];
+				for (int j = 0; j < fields.size(); j++)
+					data[i - 1][j] = count.getString(j + 1);
+			}
+			count.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+

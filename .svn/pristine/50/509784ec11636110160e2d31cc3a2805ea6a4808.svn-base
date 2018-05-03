@@ -1,0 +1,257 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
+
+import controller.infViewerController.DeleteTabAction;
+import controller.infViewerController.EntityClickedMouseAdapter;
+import controller.infViewerController.ImportJSONAction;
+import controller.jsonEditorController.OpenEditorMetaSemeAction;
+import model.Korisnik;
+import model.MyTreeModel;
+import model.Skladiste;
+import model.TipKorisnika;
+import tree.SkladisteTreeNode;
+
+public class MainFrame extends JFrame{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private MyTabbedPane tp1=null;
+	private MyTabbedPane tp2=null;
+	private Skladiste skladiste = null;
+	private static MainFrame mainFrame =  null;
+	private MyTreeModel treeModel = null;
+	private JTree tree = null;
+	
+	/*
+	 * Parametri za konekciju
+	 */
+	private Connection connection;
+	private String url;
+	private String name;
+	private String username;
+	private String password;
+	
+	public static Korisnik korisnik;
+	
+	 private MainFrame() {
+		 
+		 initGUI();
+		 
+		 }
+
+	private void initGUI() {
+		
+	     setDefaultCloseOperation(3); 
+	     setSize(800, 600);
+		 setTitle("InfoViewer 203.4");
+		 setResizable(false);
+		 setLocationRelativeTo(null);
+		 
+		 //initializeTree();
+		 SkladisteTreeNode root = new SkladisteTreeNode("Empty tree");
+		 treeModel = new MyTreeModel(root);
+		 tree= new JTree();
+		 tree.setModel(treeModel);
+		 tree.addMouseListener(new EntityClickedMouseAdapter());
+		 tree.setCellRenderer(new MyTreeCellRenderer());
+		 tree.setEditable(true); 		 
+		 
+		 JScrollPane treePane = new JScrollPane();
+		 treePane.add(tree);
+		 
+		 tp1 = new MyTabbedPane();
+		 tp2 = new MyTabbedPane();
+		//splitPane koji deli dve tabele
+		 JSplitPane tableSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tp1, tp2);
+		 tableSplitPane.setDividerLocation(250);
+		 
+		 //splitPane koji razdvaja drvo od tabela
+		 JSplitPane panelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, tableSplitPane);
+		 panelSplit.setDividerLocation(190);
+		 
+		 getContentPane().add(panelSplit, BorderLayout.CENTER);
+		 
+		 createMenuBar();
+		 createToolBar();
+		 
+		 setVisible(true);
+	}
+
+	public static MainFrame getMainFrame(Korisnik k) {
+		if(mainFrame==null){
+			korisnik = k;
+			mainFrame = new MainFrame();
+		}
+		
+		return mainFrame;
+	}
+	
+	public static MainFrame getMainFrame() {
+		if(mainFrame==null){
+			mainFrame = new MainFrame();
+		}
+		
+		return mainFrame;
+	}
+	
+	
+	public void initializeTree(Skladiste s){
+		 skladiste = s;
+		 try {
+			 try {
+				Class.forName("net.sourceforge.jtds.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+
+			connection=DriverManager.getConnection(
+					 "jdbc:jtds:sqlserver://"+s.getUrl()+"/"+s.getNaziv(),
+					 s.getUsername(),
+					 s.getPassword());
+			treeModel.setRoot(new SkladisteTreeNode(skladiste));
+			 //tree.setModel(treeModel);
+			 for(int i = 0; i<tree.getRowCount();i++){
+				 tree.collapseRow(i);
+			 }
+		} catch (SQLException e) {
+			System.out.println("Greska pri konekciji");
+			e.printStackTrace();
+		} 
+	}
+	
+	
+	private void createMenuBar() {
+		   JMenuBar menubar = new JMenuBar();
+	       
+
+	        JMenu fileMenu = new JMenu("File");
+	        fileMenu.setMnemonic(KeyEvent.VK_F);
+	       
+	        ImageIcon iconExit = new ImageIcon("resources/refresh.png");
+	        //JMenuItem refreshMenuItem = new JMenuItem("Refresh", iconExit);
+	        //refreshMenuItem.setMnemonic(KeyEvent.VK_R);
+	        //refreshMenuItem.setToolTipText("Refresh");
+	        //fileMenu.add(refreshMenuItem);
+	        JMenuItem importJSONMenuItem = new JMenuItem("Import JSON");
+	        importJSONMenuItem.addActionListener(new ImportJSONAction());
+	        fileMenu.add(importJSONMenuItem);
+	       
+	        JMenu editMenu = new JMenu("Edit");
+	        editMenu.setMnemonic(KeyEvent.VK_E);
+	        
+	        
+	        if(korisnik.getTip().equals(TipKorisnika.ADMIN)){
+	        	JMenuItem editor = new JMenuItem("EditorMetaSeme");
+	        	editMenu.add(editor);
+	        	editor.addActionListener(new OpenEditorMetaSemeAction());
+	        }
+	        
+	        ImageIcon iconPhone = new ImageIcon("resources/phone.png");
+	        JMenuItem contactMenuItem = new JMenuItem("Contact Us", iconPhone);
+	        contactMenuItem.setToolTipText("Contact us via thelephone!");
+	        contactMenuItem.addActionListener((ActionEvent event) -> {
+	            JOptionPane.showMessageDialog(null, "Our number is 06300000000");
+	        });
+	        ImageIcon iconPin = new ImageIcon("resources/mapPin.png");
+	        JMenuItem addressMenuItem = new JMenuItem("Visit Us", iconPin);
+	        addressMenuItem.setToolTipText("Visit us!");
+	        addressMenuItem.addActionListener((ActionEvent event) -> {
+	            JOptionPane.showMessageDialog(null, "Our address is Knez Mihailova 6.");
+	        });
+	        
+	        JMenu aboutMenu = new JMenu("About");
+	        aboutMenu.setMnemonic(KeyEvent.VK_A);
+	        aboutMenu.add(contactMenuItem);
+	        aboutMenu.add(addressMenuItem);
+
+	        
+	        menubar.add(fileMenu);
+	        menubar.add(editMenu);
+	        menubar.add(aboutMenu);
+	        
+	        setJMenuBar(menubar);
+		
+	} 
+
+	
+	
+	  private void createToolBar() {
+
+	        JToolBar toolbar1 = new JToolBar();
+
+	        ImageIcon newi = new ImageIcon("resources/new.png");
+	        ImageIcon open = new ImageIcon("resources/open.png");
+	        ImageIcon save = new ImageIcon("resources/save.png");
+	        ImageIcon exit = new ImageIcon("resources/exit.png");
+	        
+	        JButton newb = new JButton(newi);
+	        JButton openb = new JButton(open);
+	        JButton saveb = new JButton(save);
+	        //JButton newPane = new JButton("NewTab");
+
+	        toolbar1.add(newb);
+	        toolbar1.add(openb);
+	        toolbar1.add(saveb);
+	        
+
+	        JButton exitb = new JButton(exit);
+	        exitb.setToolTipText("Close tab");
+
+	        exitb.addActionListener(new DeleteTabAction(tp1));
+	        toolbar1.add(exitb);
+	        
+	        //toolbar1.add(newPane);
+	        //newPane.addActionListener(new AddTabbedPaneAction(tp1));
+	        
+	        /*
+	        JPanel leftPanel = new JPanel();
+	        leftPanel.setPreferredSize(new Dimension(150,300));
+	        leftPanel.setBackground(Color.gray);
+	        JPanel rightPanel = new JPanel();
+	        rightPanel.setPreferredSize(new Dimension(450,300));
+	        rightPanel.setBackground(Color.pink);
+	        //createLayout(toolbar1, toolbar2);
+	        createLayout(toolbar1, leftPanel, rightPanel);
+	        */
+	        
+	        add(toolbar1, BorderLayout.PAGE_START);
+	    }
+	  
+	  public MyTabbedPane getTp1() {
+		return tp1;
+	  }
+	  
+	  public JTree getTree() {
+		return tree;
+	  }
+	  
+	  public MyTreeModel getTreeModel() {
+		return treeModel;
+	  }
+
+	public Connection getConnection() {
+		return connection;
+	}
+
+}

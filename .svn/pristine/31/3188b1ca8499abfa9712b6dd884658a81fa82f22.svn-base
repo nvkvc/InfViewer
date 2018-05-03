@@ -1,0 +1,33 @@
+package model.file;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+
+/**
+ * Interfejs koji opisuje ponašenje datoteke sa bilo kojom organizacijom.
+ * Operacije koje se mogu izvoditi u datoteci su:
+ * a) Čitanje zaglavlja datoteke koja se izvodi pri otvaranju datoteke,
+ *    tada se formira struktura sloga datoteke, sa svim obeležjima koje slog sadrži
+ * b) Zahvatanje bloka podataka iz datoteke u radnu memoriju aplikacije    
+ * c) Dodavanje novog sloga u datoteku
+ * d) Izmena selektovanog sloga u datoteci
+ * e) Brisanje sloga iz datoteke 
+ * 
+ * @author Igor Z.
+ *
+ */
+public interface IUIFile {
+	
+	
+	
+	public void readHeader() throws IOException;
+	public boolean fetchNextBlock() throws IOException;
+	public boolean addRecord(ArrayList<String> record) throws IOException;
+	public boolean updateRecord(ArrayList<String> record)throws IOException;
+	public boolean findRecord(ArrayList<String> searchRec,int[] position);
+	public boolean deleteRecord(ArrayList<String> searchRec);
+	public void sortMDI()throws IOException;
+	public void sortMM()throws IOException;
+	
+}
